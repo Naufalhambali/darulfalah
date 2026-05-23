@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Keepalive — Darul Falah</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --teal:   #00b894;
+    --teal-d: #00897b;
+    --bg:     #f0faf9;
+    --card:   #ffffff;
+    --text:   #1a2332;
+    --mid:    #546e7a;
+    --light:  #90a4ae;
+    --border: #e0f2f1;
+    --ok:     #00c853;
+    --err:    #e74c3c;
+  }
+
+  body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background: var(--bg);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .card {
+    background: var(--card);
+    border-radius: 20px;
+    padding: 36px 32px;
+    width: 100%;
+    max-width: 440px;
+    box-shadow: 0 8px 40px rgba(0,184,148,0.12);
+    border: 1px solid var(--border);
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 28px;
+  }
+  .logo-icon {
+    width: 42px; height: 42px;
+    background: linear-gradient(135deg, var(--teal), var(--teal-d));
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+  }
+  .logo-text { font-size: 15px; font-weight: 700; color: var(--text); line-height: 1.3; }
+  .logo-sub  { font-size: 11px; color: var(--mid); font-weight: 500; }
+
+  h1 { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+  .desc { font-size: 13px; color: var(--mid); margin-bottom: 28px; line-height: 1.6; }
+
+  .status-box {
+    background: var(--bg);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 20px;
+    border: 1px solid var(--border);
+  }
+  .status-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+  .status-row:last-child { border-bottom: none; }
+  .status-label { color: var(--mid); font-weight: 500; }
+  .status-val   { font-weight: 600; color: var(--text); }
+  .status-val.ok  { color: var(--ok); }
+  .status-val.err { color: var(--err); }
+  .status-val.pending { color: var(--teal); }
+
+  .pulse {
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--teal);
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+  .dot.ok  { background: var(--ok);  animation: none; }
+  .dot.err { background: var(--err); animation: none; }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%       { opacity: 0.4; transform: scale(0.8); }
+  }
+
+  .log-title {
+    font-size: 12px; font-weight: 700; color: var(--light);
+    text-transform: uppercase; letter-spacing: 0.5px;
+    margin-bottom: 8px;
+  }
+  .log-wrap {
+    background: #1a2332;
+    border-radius: 10px;
+    padding: 12px 14px;
+    max-height: 160px;
+    overflow-y: auto;
+    margin-bottom: 20px;
+  }
+  .log-line {
+    font-size: 11px; font-family: 'Courier New', monospace;
+    line-height: 1.8; color: #8899aa;
+  }
+  .log-line.ok  { color: #4ade80; }
+  .log-line.err { color: #f87171; }
+  .log-line.info{ color: #60a5fa; }
+
+  .btn-ping {
+    width: 100%; padding: 13px;
+    background: linear-gradient(135deg, var(--teal), var(--teal-d));
+    color: white; border: none; border-radius: 12px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 14px; font-weight: 700; cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    box-shadow: 0 4px 16px rgba(0,184,148,0.3);
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .btn-ping:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,184,148,0.4); }
+  .btn-ping:active { transform: translateY(0); }
+  .btn-ping:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+  .info-box {
+    margin-top: 16px;
+    padding: 12px 14px;
+    background: #e8f5e9;
+    border-radius: 10px;
+    font-size: 11px;
+    color: #2e7d32;
+    line-height: 1.7;
+  }
+  .info-box strong { font-weight: 700; }
+
+  .footer {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 11px;
+    color: var(--light);
+  }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="logo">
+    <div class="logo-icon">🏫</div>
+    <div>
+      <div class="logo-text">Darul Falah Gambut</div>
+      <div class="logo-sub">Database Keepalive Monitor</div>
+    </div>
+  </div>
+
+  <h1>🔁 Supabase Keepalive</h1>
+  <p class="desc">Halaman ini melakukan ping ke database secara otomatis agar Supabase tidak pause karena tidak aktif.</p>
+
+  <div class="status-box">
+    <div class="status-row">
+      <span class="status-label">Status Koneksi</span>
+      <span class="status-val pending pulse" id="st-koneksi">
+        <span class="dot" id="st-dot"></span>
+        <span id="st-text">Menghubungkan...</span>
+      </span>
+    </div>
+    <div class="status-row">
+      <span class="status-label">Ping Terakhir</span>
+      <span class="status-val" id="st-last">—</span>
+    </div>
+    <div class="status-row">
+      <span class="status-label">Total Ping Hari Ini</span>
+      <span class="status-val" id="st-count">0</span>
+    </div>
+    <div class="status-row">
+      <span class="status-label">Ping Berikutnya</span>
+      <span class="status-val" id="st-next">—</span>
+    </div>
+  </div>
+
+  <div class="log-title">📋 Log Aktivitas</div>
+  <div class="log-wrap" id="log-wrap">
+    <div class="log-line info">[INFO] Halaman dimuat, menginisialisasi koneksi...</div>
+  </div>
+
+  <button class="btn-ping" id="btn-ping" onclick="doPing()">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.95"/>
+    </svg>
+    Ping Manual Sekarang
+  </button>
+
+  <div class="info-box">
+    <strong>📌 Setup Cronjob (gratis):</strong><br>
+    1. Buka <strong>cron-job.org</strong> → daftar gratis<br>
+    2. Buat job baru → URL: alamat halaman ini<br>
+    3. Jadwal: setiap <strong>3 hari sekali</strong> sudah cukup<br>
+    4. Supabase pause setelah <strong>7 hari</strong> tidak aktif
+  </div>
+
+  <div class="footer">
+    Sistem Admin Pondok Pesantren Darul Falah Gambut
+  </div>
+</div>
+
+<script>
+// ── Konfigurasi Supabase ──────────────────────────────
+const SUPABASE_URL  = 'https://nqcqhrthrtpxtyybhlvp.supabase.co';
+const SUPABASE_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5xY3FocnRocnRweHR5eWJobHZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDUxNTIwNjEsImV4cCI6MjA2MDcyODA2MX0.VqSNMFBLkqJ7MTkm3YVyxkY8YR4K2pOIROaWT3TwfYIs';
+const PING_INTERVAL = 4 * 60 * 60 * 1000; // Auto ping setiap 4 jam saat halaman terbuka
+
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let pingCount = parseInt(localStorage.getItem('df-ping-count') || '0');
+let lastDate  = localStorage.getItem('df-ping-date') || '';
+let nextPingTimer = null;
+
+// Reset count setiap hari baru
+const today = new Date().toDateString();
+if (lastDate !== today) {
+  pingCount = 0;
+  localStorage.setItem('df-ping-count', '0');
+  localStorage.setItem('df-ping-date', today);
+}
+
+function addLog(msg, type = '') {
+  const wrap = document.getElementById('log-wrap');
+  const now  = new Date().toLocaleTimeString('id-ID');
+  const div  = document.createElement('div');
+  div.className = `log-line ${type}`;
+  div.textContent = `[${now}] ${msg}`;
+  wrap.appendChild(div);
+  wrap.scrollTop = wrap.scrollHeight;
+  // Batasi log maksimal 50 baris
+  while (wrap.children.length > 50) wrap.removeChild(wrap.firstChild);
+}
+
+function setStatus(ok, text) {
+  const dot  = document.getElementById('st-dot');
+  const stEl = document.getElementById('st-text');
+  const box  = document.getElementById('st-koneksi');
+  dot.className  = `dot ${ok === null ? '' : ok ? 'ok' : 'err'}`;
+  stEl.textContent = text;
+  box.className  = `status-val ${ok === null ? 'pending pulse' : ok ? 'ok' : 'err'}`;
+}
+
+function updateNextPing() {
+  const next = new Date(Date.now() + PING_INTERVAL);
+  document.getElementById('st-next').textContent =
+    next.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+}
+
+async function doPing() {
+  const btn = document.getElementById('btn-ping');
+  btn.disabled = true;
+  btn.innerHTML = `<div style="width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:pulse 0.7s linear infinite;"></div> Mengirim ping...`;
+
+  setStatus(null, 'Menghubungkan...');
+  addLog('Memulai ping ke Supabase...', 'info');
+
+  try {
+    const start = Date.now();
+
+    // Ping ringan — cukup count satu baris, tidak butuh autentikasi
+    const { error } = await sb.from('setting').select('id', { count: 'exact', head: true });
+
+    if (error) throw error;
+
+    const ms  = Date.now() - start;
+    const now = new Date().toLocaleString('id-ID');
+
+    pingCount++;
+    localStorage.setItem('df-ping-count', pingCount.toString());
+    localStorage.setItem('df-ping-date', today);
+    localStorage.setItem('df-ping-last', now);
+
+    setStatus(true, '✓ Terhubung');
+    document.getElementById('st-last').textContent  = now;
+    document.getElementById('st-count').textContent = pingCount;
+    addLog(`✅ Ping berhasil — respons ${ms}ms (${pingCount}x hari ini)`, 'ok');
+    updateNextPing();
+
+  } catch(err) {
+    setStatus(false, '✗ Gagal');
+    addLog(`❌ Ping gagal: ${err.message}`, 'err');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.95"/></svg> Ping Manual Sekarang`;
+
+    // Jadwalkan ping otomatis berikutnya
+    clearTimeout(nextPingTimer);
+    nextPingTimer = setTimeout(() => {
+      addLog('⏱️ Auto-ping terjadwal...', 'info');
+      doPing();
+    }, PING_INTERVAL);
+  }
+}
+
+// Tampilkan data tersimpan saat load
+const savedLast = localStorage.getItem('df-ping-last');
+if (savedLast) document.getElementById('st-last').textContent = savedLast;
+document.getElementById('st-count').textContent = pingCount;
+
+// Ping otomatis saat halaman pertama kali dibuka
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    addLog('⚡ Auto-ping saat halaman dibuka...', 'info');
+    doPing();
+  }, 1000);
+});
+</script>
+</body>
+</html>
