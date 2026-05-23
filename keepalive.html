@@ -3,232 +3,331 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Keepalive — Darul Falah</title>
+<title>Keepalive Monitor — Darul Falah</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet"/>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
-  :root {
-    --teal:   #00b894;
-    --teal-d: #00897b;
-    --bg:     #f0faf9;
-    --card:   #ffffff;
-    --text:   #1a2332;
-    --mid:    #546e7a;
-    --light:  #90a4ae;
-    --border: #e0f2f1;
-    --ok:     #00c853;
-    --err:    #e74c3c;
-  }
+:root{
+  --teal:#00b894;--teal-d:#00897b;--teal-xd:#00695c;
+  --bg:#0d1117;--surface:#161b22;--card:#1c2128;--card2:#21262d;
+  --border:#30363d;--border2:#21262d;
+  --text:#e6edf3;--mid:#8b949e;--light:#484f58;
+  --ok:#3fb950;--err:#f85149;--warn:#d29922;--info:#58a6ff;
+  --teal-glow:rgba(0,184,148,0.15);
+}
 
-  body {
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    background: var(--bg);
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-  }
+body{
+  font-family:'Plus Jakarta Sans',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  display:flex;flex-direction:column;
+  align-items:center;
+  padding:24px 16px 40px;
+}
 
-  .card {
-    background: var(--card);
-    border-radius: 20px;
-    padding: 36px 32px;
-    width: 100%;
-    max-width: 440px;
-    box-shadow: 0 8px 40px rgba(0,184,148,0.12);
-    border: 1px solid var(--border);
-  }
+/* ── Header ── */
+.header{
+  width:100%;max-width:520px;
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:24px;
+}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand-icon{
+  width:38px;height:38px;
+  background:linear-gradient(135deg,var(--teal),var(--teal-xd));
+  border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;
+  box-shadow:0 0 16px var(--teal-glow);
+}
+.brand-name{font-size:14px;font-weight:700;color:var(--text);}
+.brand-sub{font-size:11px;color:var(--mid);}
+.badge-live{
+  display:flex;align-items:center;gap:5px;
+  background:rgba(63,185,80,0.12);
+  border:1px solid rgba(63,185,80,0.3);
+  border-radius:20px;padding:4px 10px;
+  font-size:11px;font-weight:600;color:var(--ok);
+}
+.badge-live .blink{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--ok);
+  animation:blink 1.5s ease-in-out infinite;
+}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.2}}
 
-  .logo {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 28px;
-  }
-  .logo-icon {
-    width: 42px; height: 42px;
-    background: linear-gradient(135deg, var(--teal), var(--teal-d));
-    border-radius: 12px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 20px;
-  }
-  .logo-text { font-size: 15px; font-weight: 700; color: var(--text); line-height: 1.3; }
-  .logo-sub  { font-size: 11px; color: var(--mid); font-weight: 500; }
+/* ── Hero card ── */
+.hero{
+  width:100%;max-width:520px;
+  background:linear-gradient(135deg,var(--surface) 0%,var(--card) 100%);
+  border:1px solid var(--border);
+  border-radius:16px;padding:24px;
+  margin-bottom:16px;
+  position:relative;overflow:hidden;
+}
+.hero::before{
+  content:'';position:absolute;top:-40px;right:-40px;
+  width:160px;height:160px;
+  background:radial-gradient(circle,var(--teal-glow) 0%,transparent 70%);
+  pointer-events:none;
+}
+.hero-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+.hero-title{font-size:16px;font-weight:700;color:var(--text);}
+.hero-sub{font-size:12px;color:var(--mid);margin-top:2px;}
+.status-pill{
+  display:flex;align-items:center;gap:6px;
+  padding:6px 12px;border-radius:20px;
+  font-size:12px;font-weight:700;
+  border:1px solid;
+  transition:all 0.3s;
+}
+.status-pill.ok {background:rgba(63,185,80,0.12);border-color:rgba(63,185,80,0.3);color:var(--ok);}
+.status-pill.err{background:rgba(248,81,73,0.12);border-color:rgba(248,81,73,0.3);color:var(--err);}
+.status-pill.pending{background:rgba(0,184,148,0.1);border-color:rgba(0,184,148,0.3);color:var(--teal);}
 
-  h1 { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
-  .desc { font-size: 13px; color: var(--mid); margin-bottom: 28px; line-height: 1.6; }
+/* Stat grid */
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.stat-item{
+  background:var(--card2);border:1px solid var(--border2);
+  border-radius:10px;padding:12px 14px;
+}
+.stat-label{font-size:11px;color:var(--mid);font-weight:500;margin-bottom:4px;}
+.stat-val{font-size:18px;font-weight:800;color:var(--text);}
+.stat-val.teal{color:var(--teal);}
+.stat-val small{font-size:11px;font-weight:500;color:var(--mid);}
 
-  .status-box {
-    background: var(--bg);
-    border-radius: 12px;
-    padding: 16px;
-    margin-bottom: 20px;
-    border: 1px solid var(--border);
-  }
-  .status-row {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 8px 0;
-    border-bottom: 1px solid var(--border);
-    font-size: 13px;
-  }
-  .status-row:last-child { border-bottom: none; }
-  .status-label { color: var(--mid); font-weight: 500; }
-  .status-val   { font-weight: 600; color: var(--text); }
-  .status-val.ok  { color: var(--ok); }
-  .status-val.err { color: var(--err); }
-  .status-val.pending { color: var(--teal); }
+/* ── Histori harian ── */
+.section{width:100%;max-width:520px;margin-bottom:16px;}
+.section-head{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:10px;
+}
+.section-title{font-size:12px;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:0.5px;}
+.btn-clear{
+  font-size:11px;color:var(--light);background:none;border:none;
+  cursor:pointer;font-family:inherit;
+}
+.btn-clear:hover{color:var(--err);}
 
-  .pulse {
-    display: inline-flex; align-items: center; gap: 6px;
-  }
-  .dot {
-    width: 8px; height: 8px; border-radius: 50%;
-    background: var(--teal);
-    animation: pulse 1.5s ease-in-out infinite;
-  }
-  .dot.ok  { background: var(--ok);  animation: none; }
-  .dot.err { background: var(--err); animation: none; }
+.history-list{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:12px;overflow:hidden;
+}
+.history-item{
+  display:flex;align-items:center;gap:12px;
+  padding:10px 14px;
+  border-bottom:1px solid var(--border2);
+  font-size:12px;
+}
+.history-item:last-child{border-bottom:none;}
+.history-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.history-dot.ok {background:var(--ok);}
+.history-dot.err{background:var(--err);}
+.history-date{font-weight:600;color:var(--text);min-width:80px;}
+.history-count{color:var(--mid);}
+.history-last{color:var(--light);margin-left:auto;font-size:11px;}
+.history-empty{padding:20px;text-align:center;color:var(--light);font-size:13px;}
 
-  @keyframes pulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50%       { opacity: 0.4; transform: scale(0.8); }
-  }
+/* ── Log ── */
+.log-wrap{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:12px;padding:12px 14px;
+  max-height:150px;overflow-y:auto;
+}
+.log-line{font-size:11px;font-family:'Courier New',monospace;line-height:1.9;color:var(--light);}
+.log-line.ok  {color:var(--ok);}
+.log-line.err {color:var(--err);}
+.log-line.info{color:var(--info);}
+.log-line.warn{color:var(--warn);}
 
-  .log-title {
-    font-size: 12px; font-weight: 700; color: var(--light);
-    text-transform: uppercase; letter-spacing: 0.5px;
-    margin-bottom: 8px;
-  }
-  .log-wrap {
-    background: #1a2332;
-    border-radius: 10px;
-    padding: 12px 14px;
-    max-height: 160px;
-    overflow-y: auto;
-    margin-bottom: 20px;
-  }
-  .log-line {
-    font-size: 11px; font-family: 'Courier New', monospace;
-    line-height: 1.8; color: #8899aa;
-  }
-  .log-line.ok  { color: #4ade80; }
-  .log-line.err { color: #f87171; }
-  .log-line.info{ color: #60a5fa; }
+/* ── Tombol ── */
+.btn-ping{
+  width:100%;max-width:520px;
+  padding:14px;
+  background:linear-gradient(135deg,var(--teal),var(--teal-xd));
+  color:white;border:none;border-radius:12px;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:14px;font-weight:700;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  box-shadow:0 4px 20px var(--teal-glow);
+  transition:transform 0.15s,box-shadow 0.15s;
+  margin-bottom:12px;
+}
+.btn-ping:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(0,184,148,0.35);}
+.btn-ping:active{transform:translateY(0);}
+.btn-ping:disabled{opacity:0.5;cursor:not-allowed;transform:none;}
 
-  .btn-ping {
-    width: 100%; padding: 13px;
-    background: linear-gradient(135deg, var(--teal), var(--teal-d));
-    color: white; border: none; border-radius: 12px;
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: 14px; font-weight: 700; cursor: pointer;
-    transition: transform 0.15s, box-shadow 0.15s;
-    box-shadow: 0 4px 16px rgba(0,184,148,0.3);
-    display: flex; align-items: center; justify-content: center; gap: 8px;
-  }
-  .btn-ping:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,184,148,0.4); }
-  .btn-ping:active { transform: translateY(0); }
-  .btn-ping:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+/* Spinner */
+.spin{
+  width:16px;height:16px;border-radius:50%;
+  border:2px solid rgba(255,255,255,0.25);
+  border-top-color:white;
+  animation:spin 0.7s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
 
-  .info-box {
-    margin-top: 16px;
-    padding: 12px 14px;
-    background: #e8f5e9;
-    border-radius: 10px;
-    font-size: 11px;
-    color: #2e7d32;
-    line-height: 1.7;
-  }
-  .info-box strong { font-weight: 700; }
+/* ── Info box ── */
+.info-box{
+  width:100%;max-width:520px;
+  padding:14px 16px;
+  background:rgba(88,166,255,0.06);
+  border:1px solid rgba(88,166,255,0.15);
+  border-radius:12px;
+  font-size:12px;color:var(--mid);line-height:1.8;
+  margin-bottom:16px;
+}
+.info-box strong{color:var(--info);}
 
-  .footer {
-    margin-top: 20px;
-    text-align: center;
-    font-size: 11px;
-    color: var(--light);
-  }
+.footer{font-size:11px;color:var(--light);text-align:center;}
 </style>
 </head>
 <body>
 
-<div class="card">
-  <div class="logo">
-    <div class="logo-icon">🏫</div>
+<div class="header">
+  <div class="brand">
+    <div class="brand-icon">🏫</div>
     <div>
-      <div class="logo-text">Darul Falah Gambut</div>
-      <div class="logo-sub">Database Keepalive Monitor</div>
+      <div class="brand-name">Darul Falah Gambut</div>
+      <div class="brand-sub">Database Keepalive Monitor</div>
     </div>
   </div>
-
-  <h1>🔁 Supabase Keepalive</h1>
-  <p class="desc">Halaman ini melakukan ping ke database secara otomatis agar Supabase tidak pause karena tidak aktif.</p>
-
-  <div class="status-box">
-    <div class="status-row">
-      <span class="status-label">Status Koneksi</span>
-      <span class="status-val pending pulse" id="st-koneksi">
-        <span class="dot" id="st-dot"></span>
-        <span id="st-text">Menghubungkan...</span>
-      </span>
-    </div>
-    <div class="status-row">
-      <span class="status-label">Ping Terakhir</span>
-      <span class="status-val" id="st-last">—</span>
-    </div>
-    <div class="status-row">
-      <span class="status-label">Total Ping Hari Ini</span>
-      <span class="status-val" id="st-count">0</span>
-    </div>
-    <div class="status-row">
-      <span class="status-label">Ping Berikutnya</span>
-      <span class="status-val" id="st-next">—</span>
-    </div>
-  </div>
-
-  <div class="log-title">📋 Log Aktivitas</div>
-  <div class="log-wrap" id="log-wrap">
-    <div class="log-line info">[INFO] Halaman dimuat, menginisialisasi koneksi...</div>
-  </div>
-
-  <button class="btn-ping" id="btn-ping" onclick="doPing()">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-      <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.95"/>
-    </svg>
-    Ping Manual Sekarang
-  </button>
-
-  <div class="info-box">
-    <strong>📌 Setup Cronjob (gratis):</strong><br>
-    1. Buka <strong>cron-job.org</strong> → daftar gratis<br>
-    2. Buat job baru → URL: alamat halaman ini<br>
-    3. Jadwal: setiap <strong>3 hari sekali</strong> sudah cukup<br>
-    4. Supabase pause setelah <strong>7 hari</strong> tidak aktif
-  </div>
-
-  <div class="footer">
-    Sistem Admin Pondok Pesantren Darul Falah Gambut
+  <div class="badge-live" id="badge-live">
+    <span class="blink"></span> LIVE
   </div>
 </div>
 
+<!-- Hero -->
+<div class="hero">
+  <div class="hero-top">
+    <div>
+      <div class="hero-title">Status Supabase</div>
+      <div class="hero-sub" id="hero-sub">Menginisialisasi...</div>
+    </div>
+    <div class="status-pill pending" id="status-pill">
+      <span id="pill-dot">⏳</span>
+      <span id="pill-text">Checking</span>
+    </div>
+  </div>
+  <div class="stat-grid">
+    <div class="stat-item">
+      <div class="stat-label">Ping Hari Ini</div>
+      <div class="stat-val teal" id="stat-today">0 <small>kali</small></div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-label">Total Semua</div>
+      <div class="stat-val" id="stat-total">0 <small>kali</small></div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-label">Ping Terakhir</div>
+      <div class="stat-val" id="stat-last" style="font-size:12px;font-weight:600;">—</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-label">Ping Berikutnya</div>
+      <div class="stat-val" id="stat-next" style="font-size:12px;font-weight:600;">—</div>
+    </div>
+  </div>
+</div>
+
+<!-- Histori Harian -->
+<div class="section">
+  <div class="section-head">
+    <span class="section-title">📅 Histori per Hari</span>
+    <button class="btn-clear" onclick="clearHistory()">Hapus histori</button>
+  </div>
+  <div class="history-list" id="history-list">
+    <div class="history-empty">Belum ada histori ping</div>
+  </div>
+</div>
+
+<!-- Log -->
+<div class="section">
+  <div class="section-head">
+    <span class="section-title">📋 Log Aktivitas</span>
+  </div>
+  <div class="log-wrap" id="log-wrap">
+    <div class="log-line info">[INFO] Halaman dimuat...</div>
+  </div>
+</div>
+
+<!-- Tombol -->
+<button class="btn-ping" id="btn-ping" onclick="doPing()">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+    <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.95"/>
+  </svg>
+  Ping Manual Sekarang
+</button>
+
+<div class="info-box">
+  <strong>📌 Cronjob aktif:</strong> cron-job.org membuka halaman ini setiap 3 hari.<br>
+  Supabase free plan pause setelah <strong>7 hari</strong> tidak ada aktivitas.
+</div>
+
+<div class="footer">Sistem Admin Pondok Pesantren Darul Falah Gambut</div>
+
 <script>
-// ── Konfigurasi Supabase ──────────────────────────────
 const SUPABASE_URL  = 'https://nqcqhrthrtpxtyybhlvp.supabase.co';
 const SUPABASE_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5xY3FocnRocnRweHR5eWJobHZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDUxNTIwNjEsImV4cCI6MjA2MDcyODA2MX0.VqSNMFBLkqJ7MTkm3YVyxkY8YR4K2pOIROaWT3TwfYIs';
-const PING_INTERVAL = 4 * 60 * 60 * 1000; // Auto ping setiap 4 jam saat halaman terbuka
+const PING_INTERVAL = 4 * 60 * 60 * 1000;
+const KEY_HIST      = 'df-ka-history';  // { "2025-05-17": { count:3, last:"...", ok:true } }
+const KEY_TOTAL     = 'df-ka-total';
+const KEY_LAST      = 'df-ka-last';
 
-let pingCount = parseInt(localStorage.getItem('df-ping-count') || '0');
-let lastDate  = localStorage.getItem('df-ping-date') || '';
-let nextPingTimer = null;
+let nextTimer = null;
+let totalPing = parseInt(localStorage.getItem(KEY_TOTAL) || '0');
 
-// Reset count setiap hari baru
-const today = new Date().toDateString();
-if (lastDate !== today) {
-  pingCount = 0;
-  localStorage.setItem('df-ping-count', '0');
-  localStorage.setItem('df-ping-date', today);
+// ── Histori ──────────────────────────────────────────
+function getHistory() {
+  try { return JSON.parse(localStorage.getItem(KEY_HIST) || '{}'); } catch{ return {}; }
+}
+function saveHistory(h) {
+  localStorage.setItem(KEY_HIST, JSON.stringify(h));
+}
+function todayKey() {
+  return new Date().toISOString().slice(0,10);
+}
+function clearHistory() {
+  if (!confirm('Hapus semua histori ping?')) return;
+  localStorage.removeItem(KEY_HIST);
+  localStorage.removeItem(KEY_TOTAL);
+  localStorage.removeItem(KEY_LAST);
+  totalPing = 0;
+  renderHistory();
+  updateStats();
+  addLog('🗑️ Histori dihapus', 'warn');
 }
 
+function renderHistory() {
+  const hist = getHistory();
+  const list = document.getElementById('history-list');
+  const keys = Object.keys(hist).sort((a,b) => b.localeCompare(a)).slice(0, 14);
+  if (!keys.length) {
+    list.innerHTML = '<div class="history-empty">Belum ada histori ping</div>';
+    return;
+  }
+  list.innerHTML = keys.map(k => {
+    const d   = hist[k];
+    const tgl = new Date(k).toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'});
+    return `<div class="history-item">
+      <span class="history-dot ${d.ok?'ok':'err'}"></span>
+      <span class="history-date">${tgl}</span>
+      <span class="history-count">${d.count}x ping</span>
+      <span class="history-last">${d.last || ''}</span>
+    </div>`;
+  }).join('');
+}
+
+function updateStats() {
+  const hist  = getHistory();
+  const today = hist[todayKey()];
+  document.getElementById('stat-today').innerHTML = `${today?.count||0} <small>kali</small>`;
+  document.getElementById('stat-total').innerHTML = `${totalPing} <small>kali</small>`;
+  const last = localStorage.getItem(KEY_LAST);
+  document.getElementById('stat-last').textContent = last || '—';
+}
+
+// ── Log ──────────────────────────────────────────────
 function addLog(msg, type = '') {
   const wrap = document.getElementById('log-wrap');
   const now  = new Date().toLocaleTimeString('id-ID');
@@ -237,92 +336,89 @@ function addLog(msg, type = '') {
   div.textContent = `[${now}] ${msg}`;
   wrap.appendChild(div);
   wrap.scrollTop = wrap.scrollHeight;
-  // Batasi log maksimal 50 baris
-  while (wrap.children.length > 50) wrap.removeChild(wrap.firstChild);
+  while (wrap.children.length > 60) wrap.removeChild(wrap.firstChild);
 }
 
-function setStatus(ok, text) {
-  const dot  = document.getElementById('st-dot');
-  const stEl = document.getElementById('st-text');
-  const box  = document.getElementById('st-koneksi');
-  dot.className  = `dot ${ok === null ? '' : ok ? 'ok' : 'err'}`;
-  stEl.textContent = text;
-  box.className  = `status-val ${ok === null ? 'pending pulse' : ok ? 'ok' : 'err'}`;
+// ── Status pill ──────────────────────────────────────
+function setStatus(state) {
+  // state: 'pending' | 'ok' | 'err'
+  const pill = document.getElementById('status-pill');
+  const dot  = document.getElementById('pill-dot');
+  const txt  = document.getElementById('pill-text');
+  const sub  = document.getElementById('hero-sub');
+  pill.className = `status-pill ${state}`;
+  if (state === 'ok')  { dot.textContent='✓'; txt.textContent='Terhubung'; sub.textContent='Database aktif dan berjalan normal'; }
+  if (state === 'err') { dot.textContent='✗'; txt.textContent='Gagal'; sub.textContent='Tidak dapat terhubung ke database'; }
+  if (state === 'pending') { dot.textContent='⏳'; txt.textContent='Checking'; sub.textContent='Menghubungkan ke database...'; }
 }
 
 function updateNextPing() {
   const next = new Date(Date.now() + PING_INTERVAL);
-  document.getElementById('st-next').textContent =
-    next.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+  document.getElementById('stat-next').textContent =
+    next.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
 }
 
+// ── Ping ─────────────────────────────────────────────
 async function doPing() {
   const btn = document.getElementById('btn-ping');
   btn.disabled = true;
-  btn.innerHTML = `<div style="width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:pulse 0.7s linear infinite;"></div> Mengirim ping...`;
-
-  setStatus(null, 'Menghubungkan...');
-  addLog('Memulai ping ke Supabase...', 'info');
+  btn.innerHTML = `<div class="spin"></div> Mengirim ping...`;
+  setStatus('pending');
+  addLog('Ping ke Supabase...', 'info');
 
   try {
     const start = Date.now();
-
-    // Ping ke health check Supabase — tidak butuh auth sama sekali
-    const res = await fetch(
-      `${SUPABASE_URL}/rest/v1/`,
-      {
-        method: 'GET',
-        headers: {
-          'apikey':        SUPABASE_KEY,
-          'Authorization': `Bearer ${SUPABASE_KEY}`,
-        }
-      }
-    );
-
-    // 200 atau 400 sama-sama berarti server hidup
-    if (res.status >= 500) throw new Error(`Server error: HTTP ${res.status}`);
+    const res   = await fetch(`${SUPABASE_URL}/rest/v1/`, {
+      method: 'GET',
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+    });
+    if (res.status >= 500) throw new Error(`Server error HTTP ${res.status}`);
 
     const ms  = Date.now() - start;
     const now = new Date().toLocaleString('id-ID');
+    const key = todayKey();
 
-    pingCount++;
-    localStorage.setItem('df-ping-count', pingCount.toString());
-    localStorage.setItem('df-ping-date', today);
-    localStorage.setItem('df-ping-last', now);
+    // Update histori
+    const hist      = getHistory();
+    const prev      = hist[key] || { count: 0, last: '', ok: false };
+    hist[key]       = { count: prev.count + 1, last: now, ok: true };
+    saveHistory(hist);
 
-    setStatus(true, '✓ Terhubung');
-    document.getElementById('st-last').textContent  = now;
-    document.getElementById('st-count').textContent = pingCount;
-    addLog(`✅ Ping berhasil — respons ${ms}ms (${pingCount}x hari ini)`, 'ok');
+    // Update total
+    totalPing++;
+    localStorage.setItem(KEY_TOTAL, totalPing.toString());
+    localStorage.setItem(KEY_LAST, now);
+
+    setStatus('ok');
+    addLog(`✅ Berhasil — ${ms}ms`, 'ok');
+    renderHistory();
+    updateStats();
     updateNextPing();
 
   } catch(err) {
-    setStatus(false, '✗ Gagal');
-    addLog(`❌ Ping gagal: ${err.message}`, 'err');
+    const key  = todayKey();
+    const hist = getHistory();
+    const prev = hist[key] || { count: 0, last: '', ok: false };
+    hist[key]  = { ...prev, ok: false };
+    saveHistory(hist);
+
+    setStatus('err');
+    addLog(`❌ Gagal: ${err.message}`, 'err');
+    renderHistory();
   } finally {
     btn.disabled = false;
     btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.95"/></svg> Ping Manual Sekarang`;
-
-    // Jadwalkan ping otomatis berikutnya
-    clearTimeout(nextPingTimer);
-    nextPingTimer = setTimeout(() => {
-      addLog('⏱️ Auto-ping terjadwal...', 'info');
-      doPing();
-    }, PING_INTERVAL);
+    clearTimeout(nextTimer);
+    nextTimer = setTimeout(()=>{ addLog('⏱️ Auto-ping...','info'); doPing(); }, PING_INTERVAL);
   }
 }
 
-// Tampilkan data tersimpan saat load
-const savedLast = localStorage.getItem('df-ping-last');
-if (savedLast) document.getElementById('st-last').textContent = savedLast;
-document.getElementById('st-count').textContent = pingCount;
+// ── Init ─────────────────────────────────────────────
+renderHistory();
+updateStats();
 
-// Ping otomatis saat halaman pertama kali dibuka
 window.addEventListener('load', () => {
-  setTimeout(() => {
-    addLog('⚡ Auto-ping saat halaman dibuka...', 'info');
-    doPing();
-  }, 1000);
+  setTimeout(() => { addLog('⚡ Auto-ping saat halaman dibuka...','info'); doPing(); }, 800);
 });
 </script>
 </body>
