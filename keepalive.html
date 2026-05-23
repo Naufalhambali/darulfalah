@@ -267,20 +267,20 @@ async function doPing() {
   try {
     const start = Date.now();
 
-    // Pakai fetch langsung — lebih reliable, tidak butuh supabase-js
+    // Ping ke health check Supabase — tidak butuh auth sama sekali
     const res = await fetch(
-      `${SUPABASE_URL}/rest/v1/setting?select=id&limit=1`,
+      `${SUPABASE_URL}/rest/v1/`,
       {
         method: 'GET',
         headers: {
           'apikey':        SUPABASE_KEY,
           'Authorization': `Bearer ${SUPABASE_KEY}`,
-          'Content-Type':  'application/json',
         }
       }
     );
 
-    if (!res.ok) throw new Error(`HTTP ${res.status} — ${res.statusText}`);
+    // 200 atau 400 sama-sama berarti server hidup
+    if (res.status >= 500) throw new Error(`Server error: HTTP ${res.status}`);
 
     const ms  = Date.now() - start;
     const now = new Date().toLocaleString('id-ID');
